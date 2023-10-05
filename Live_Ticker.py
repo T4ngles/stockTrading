@@ -27,10 +27,11 @@ purchase_prices = {}
 #purchase_prices['ALX.AX'] =  5.85 #23 Sep!
 #purchase_prices['VSL.AX'] =  7.5 #27 Sep
 
+purchase_prices['MFF.AX'] =  2.98 #6 Oct!
 purchase_prices['HVN.AX'] =  3.6 #13 Oct!
-#purchase_prices['WAM.AX'] =  1.63 #17 Oct
+purchase_prices['WAM.AX'] =  1.63 #17 Oct
 purchase_prices['NHC.AX'] =  6.0 #5.6 #23 Oct!
-purchase_prices['BOQ.AX'] =  5.6 #Oct!
+#purchase_prices['BOQ.AX'] =  5.6 #Oct!
 
 
 
@@ -88,7 +89,7 @@ def animate(i):
         plt.legend(loc='upper left')
         plt.grid()
     plt.axhline(y=1, color='black', linestyle='--', label='Purhcase')    
-    #plt.axhline(y=1.01, color='red', linestyle='--', label='Target1')
+    plt.axhline(y=1.01, color='red', linestyle='--', label='Target1')
     plt.axhline(y=1.02, color='green', linestyle='--', label='Target2')
         
 
