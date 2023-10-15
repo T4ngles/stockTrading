@@ -2,6 +2,7 @@ import yfinance as yf
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import pandas as pd
+import numpy
 import datetime
 import time
 
@@ -78,10 +79,22 @@ def animate(i):
     # Plot the normalized prices
     for stock_symbol in stock_symbols:
         #range(normalized_data.index.size) gives only the count of the index instead of the time
+
+        #get rid of nans if no trades in the past minutes
+        i = 1
+        while numpy.isnan(historical_data[stock_symbol][-i]):
+            i += 1
+            
         if stock_symbol in in_money:
-            plt.plot(range(normalized_data.index.size), normalized_data[stock_symbol], label=f"{stock_symbol} (buy:${purchase_prices[stock_symbol]:.2f})(cur:${historical_data[stock_symbol][-1]:.2f})", marker='x')
+            plt.plot(range(normalized_data.index.size),
+                     normalized_data[stock_symbol],
+                     label=f"{stock_symbol} (buy:${purchase_prices[stock_symbol]:.2f})(cur:${historical_data[stock_symbol][-i]:.2f})",
+                     marker='x')
         else:
-            plt.plot(range(normalized_data.index.size), normalized_data[stock_symbol], label=f"{stock_symbol} (buy:${purchase_prices[stock_symbol]:.2f})(cur:${historical_data[stock_symbol][-1]:.2f})", marker='o')
+            plt.plot(range(normalized_data.index.size),
+                     normalized_data[stock_symbol],
+                     label=f"{stock_symbol} (buy:${purchase_prices[stock_symbol]:.2f})(cur:${historical_data[stock_symbol][-i]:.2f})",
+                     marker='o')
 
         plt.xlabel("Time")
         plt.ylabel("Normalized Price")
@@ -91,6 +104,7 @@ def animate(i):
     plt.axhline(y=1, color='black', linestyle='--', label='Purhcase')    
     plt.axhline(y=1.01, color='red', linestyle='--', label='Target1')
     plt.axhline(y=1.02, color='green', linestyle='--', label='Target2')
+    plt.yticks(numpy.arange(0.95, 1.1, 0.01))
         
 
     
