@@ -9,6 +9,8 @@ import time
 # Define the ASX stock symbols and their respective normalization prices
 #stock_symbols = ["AFI.AX", "CRN.AX", "FMG.AX", "MIR.AX", "NEC.AX", "TLS.AX"] #change to dictionary with stock symbols and purchase price
 #normalization_prices = [7.0, 1.72, 23.52, 2.875, 2.01, 4.2]
+low_cutoff_ratio = 0.95
+high_cutoff_ratio = 1.05
 
 #stock_symbols = ['CBA.AX', 'FMG.AX', 'GNE.AX', 'VSL.AX', 'TLS.AX', 'HVN.AX', 'ASH.AX', 'JCS.AX', 'AFI.AX']
 
@@ -104,7 +106,7 @@ def animate(i):
     plt.axhline(y=1, color='black', linestyle='--', label='Purhcase')    
     plt.axhline(y=1.01, color='red', linestyle='--', label='Target1')
     plt.axhline(y=1.02, color='green', linestyle='--', label='Target2')
-    plt.yticks(numpy.arange(0.95, 1.1, 0.01))
+    plt.yticks(numpy.arange(low_cutoff_ratio, high_cutoff_ratio, 0.01))
         
 
     
