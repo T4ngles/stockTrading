@@ -10,6 +10,7 @@ stocks = ['BHP.AX', 'AGL.AX','FMG.AX','ORG.AX','WDS.AX','NEC.AX','WAM.AX','HVN.A
 stocks = ['AGL.AX','AMP.AX','ATM.AX','ANZ.AX','BOQ.AX','BEN.AX','BSL.AX','BFL.AX','DXS.AX','FMG.AX','GPT.AX','IAG.AX','LFG.AX','MGR.AX','NAB.AX','ORG.AX','PPM.AX','QAN.AX','QBE.AX','RMC.AX','SCG.AX','SGP.AX','SUN.AX','TAH.AX','TLS.AX','URW.AX','VCX.AX','WBC.AX','WOR.AX','YAL.AX',]
 stocks = ['BHP.AX','CBA.AX','CSL.AX','NAB.AX','ANZ.AX','WBC.AX','WDS.AX','MQG.AX','FMG.AX','WES.AX','WOW.AX','TLS.AX','RIO.AX','TCL.AX','STO.AX','QBE.AX','NCM.AX','WTC.AX','COL.AX','SUN.AX','CPU.AX','ORG.AX','SHL.AX','IAG.AX','MIN.AX','VAS.AX','NST.AX','FPH.AX','CAR.AX','TLC.AX','TPG.AX','AMC.AX','BSL.AX','TWE.AX','AFI.AX','SPK.AX','MCY.AX','IFT.AX','AGL.AX','ORI.AX','ARG.AX','MGOC.AX','VGS.AX','EBO.AX','MEZ.AX','IVV.AX','SDF.AX','CWY.AX','BEN.AX','QUB.AX','LLC.AX','STW.AX','CGF.AX','CHC.AX']
 stocks = ['FMG.AX']
+stocks = ['MFG.AX','AWC.AX','NHC.AX','WHC.AX','SUL.AX','IRE.AX','GOZ.AX','FMG.AX','CNI.AX','CQR.AX','ELD.AX','RGN.AX','BOQ.AX','IFL.AX','SGP.AX','BEN.AX','ALX.AX','APA.AX','WDS.AX','GNC.AX','DRR.AX','ORA.AX','VCX.AX','CSR.AX','GPT.AX','DXS.AX','FBU.AX','IPL.AX','WBC.AX','SCG.AX','VEA.AX','ANZ.AX','LNK.AX','HVN.AX','PPT.AX','ALD.AX','NWH.AX','VNT.AX','MTS.AX','CNU.AX','NAB.AX','BHP.AX','CMW.AX','BWP.AX','SPK.AX','NEC.AX','JBH.AX','MGR.AX','RIO.AX','CLW.AX','WPR.AX','HDN.AX','CQE.AX','AMC.AX','CIP.AX','ARF.AX']
 start_date = datetime.datetime(2022, 1, 1, tzinfo=None)
 end_date = datetime.datetime(2023, 7, 1, tzinfo=None)
 
@@ -26,8 +27,8 @@ dividend_dates_dict = {}
 for ticker in stocks:
     dividend_dates = get_dividend_history(ticker) #date is index and value is dividend amount should calculate the return using historical price
     dividend_dates_dict[ticker] = dividend_dates
-    print("-"*30)
-    print(ticker,dividend_dates_dict[ticker])
+    #print("-"*30)
+    #print(ticker,dividend_dates_dict[ticker])
 
 print("-"*30)
 print("flattening")
@@ -43,4 +44,4 @@ dates_list.sort(key=lambda x: x[1])
 print("-"*30)
 # Print the final list of dividend payment dates labeled with stock names
 for ticker, date, div in dates_list:
-    print(f"{ticker} - {date} - {div}")
+    print(f"{ticker[0:3]}, {date:%m.%d}, {div}")
