@@ -46,27 +46,30 @@ Stock_Trace('KOV.AX', 8.0, False)
 Stock_Trace('GNE.AX', 2.1, False)
 Stock_Trace('ALX.AX', 5.85, False)
 Stock_Trace('VSL.AX', 7.5, False)
-Stock_Trace('NEC.AX', 1.95, False)
 Stock_Trace('MFF.AX', 2.98, False)
 Stock_Trace('HVN.AX', 3.6, False)
 Stock_Trace('FGX.AX', 1.07, False)
 Stock_Trace('UOS.AX', 0.52, False)
 Stock_Trace('HZN.AX', 0.15, False)
 Stock_Trace('WAM.AX', 1.50, False)
-Stock_Trace('NCM.AX', 22.5, False)
+Stock_Trace('NCM.AX', 23.5, False)
 Stock_Trace('KSC.AX', 2.0, False)
 Stock_Trace('STW.AX', 66.0, False)
 Stock_Trace('SLF.AX', 66.0, False)
 Stock_Trace('SFY.AX', 65.0, False)
-
 Stock_Trace('NHC.AX', 6.18, False, "23/10/2023", 0.3)
-Stock_Trace('ASG.AX', 2.3, False, "31/10/2023", 0.1)
-Stock_Trace('BOQ.AX', 5.35, False, "26/10/2023", 0.21)
-Stock_Trace('CVL.AX', 0.88, False, "29/11/2023", 0.03)
+
+Stock_Trace('BOQ.AX', 5.45, False, "26/10/2023", 0.21)
 Stock_Trace('ACF.AX', 0.80, False, "26/10/2023", 0.027)
+Stock_Trace('ASG.AX', 2.05, False, "31/10/2023", 0.1)
+Stock_Trace('CVL.AX', 0.88, False, "29/11/2023", 0.03)
+Stock_Trace('PMV.AX', 19.7, False, "09/01/2024", 0.6)
+
+#always trading
+Stock_Trace('NEC.AX', 1.90, True, "03/03/2024", 0.05)
 
 #in money
-Stock_Trace('AGL.AX', 16.8, True)
+Stock_Trace('AGL.AX', 15.31, True)
 Stock_Trace('FMG.AX', 23.52, True)
 Stock_Trace('ASH.AX', 0.68, True)
 Stock_Trace('TLS.AX', 4.12, True)
@@ -89,7 +92,7 @@ fig = plt.figure()
 index_error = []
 
 def get_normalized_prices(stock_symbols):
-    ani = animation.FuncAnimation(fig,animate,interval=30000,cache_frame_data=False)
+    ani = animation.FuncAnimation(fig,animate,interval=60000,cache_frame_data=False)
     plt.show()    
 
 def animate(i):
@@ -102,9 +105,9 @@ def animate(i):
     normalization_prices = [ Stock_Trace._stock_dict[x].price for x in list(historical_data)] #account for order that yf downloads data
 
     normalized_data = historical_data / normalization_prices
+
+    print(datetime.datetime.now())
     
-    for stock_symbol in stock_symbols:
-        print(stock_symbol,":",round(historical_data[stock_symbol][-1],2)," purchase:", Stock_Trace._stock_dict[stock_symbol].price," norm:",round(normalized_data[stock_symbol][-1],2))
     plt.cla()
 
     # Plot the normalized prices
@@ -119,37 +122,40 @@ def animate(i):
                     i += 1
             except IndexError:
                 print(f"Index Error with {stock_symbol}")
-                i = -1 * len(historical_data[stock_symbol])
+                i = -1 * (len(historical_data[stock_symbol]) -1)
                 pass
-            
-            normalised_price = historical_data[stock_symbol][-i]/Stock_Trace._stock_dict[stock_symbol].price
-            buy_price = Stock_Trace._stock_dict[stock_symbol].price
-            current_price = historical_data[stock_symbol][-i]
-            days_left = Stock_Trace._stock_dict[stock_symbol].days_left()
-            
-            if Stock_Trace._stock_dict[stock_symbol].div:
-                div_yield = Stock_Trace._stock_dict[stock_symbol].div/current_price*100
-            else:
-                div_yield = 0
-            
-            if normalised_price > low_cutoff_ratio and normalised_price < high_cutoff_ratio:
-                
-                if Stock_Trace._stock_dict[stock_symbol].in_money:
-                    plt.plot(range(normalized_data.index.size),
-                             normalized_data[stock_symbol],
-                             label=f"{stock_symbol[0:3]} \${buy_price:.2f}({current_price:.2f}) div: {div_yield:.2f}% ex:{days_left} ",
-                             marker='x')
-                else:
-                    plt.plot(range(normalized_data.index.size),
-                             normalized_data[stock_symbol],
-                             label=f"{stock_symbol[0:3]} \${buy_price:.2f}({current_price:.2f}) div: {div_yield:.2f}% ex:{days_left} ",
-                             marker='o')
 
-                plt.xlabel("Time")
-                plt.ylabel("Normalized Price")
-                plt.title(f"Normalized Prices for ASX Stocks(As of {current_time})")
-                plt.legend(loc='upper left')
-                plt.grid()
+            if len(historical_data[stock_symbol]) != 0:
+                normalised_price = historical_data[stock_symbol][-i]/Stock_Trace._stock_dict[stock_symbol].price
+                buy_price = Stock_Trace._stock_dict[stock_symbol].price
+                current_price = historical_data[stock_symbol][-i]
+                days_left = Stock_Trace._stock_dict[stock_symbol].days_left()
+
+                print(stock_symbol,":",round(current_price,2)," purchase:", buy_price," norm:",round(normalised_price,2))
+                
+                if Stock_Trace._stock_dict[stock_symbol].div:
+                    div_yield = Stock_Trace._stock_dict[stock_symbol].div/current_price*100
+                else:
+                    div_yield = 0
+                
+                if normalised_price > low_cutoff_ratio and normalised_price < high_cutoff_ratio:
+                    
+                    if Stock_Trace._stock_dict[stock_symbol].in_money:
+                        plt.plot(range(normalized_data.index.size),
+                                 normalized_data[stock_symbol],
+                                 label=f"{stock_symbol[0:3]} \${buy_price:.2f}({current_price:.2f}) div: {div_yield:.2f}% ex:{days_left} ",
+                                 marker='x')
+                    else:
+                        plt.plot(range(normalized_data.index.size),
+                                 normalized_data[stock_symbol],
+                                 label=f"{stock_symbol[0:3]} \${buy_price:.2f}({current_price:.2f}) div: {div_yield:.2f}% ex:{days_left} ",
+                                 marker='o')
+
+                    plt.xlabel("Time")
+                    plt.ylabel("Normalized Price")
+                    plt.title(f"Normalized Prices for ASX Stocks(As of {current_time})")
+                    plt.legend(loc='upper left')
+                    plt.grid()
     plt.axhline(y=1, color='black', linestyle='--', label='Purhcase')    
     plt.axhline(y=1.01, color='red', linestyle='--', label='Target1')
     plt.axhline(y=1.02, color='green', linestyle='--', label='Target2')
