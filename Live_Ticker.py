@@ -12,7 +12,7 @@ high_cutoff_ratio = 1.05
 class Stock_Trace:
     _stock_dict = {}
     
-    def __init__(self, ticker, price, in_money, ex_date=None, div=None):
+    def __init__(self, ticker: str, price: float, in_money: bool = False, ex_date: str = None, div: float = None):
         self.ticker = ticker
         self.price = price        
         self.div = div
@@ -22,10 +22,10 @@ class Stock_Trace:
             self.ex_date = datetime.datetime.strptime(self.ex_date, '%d/%m/%Y')
         Stock_Trace._stock_dict[self.ticker] = self
         
-    def div_return(self):
+    def div_return(self) -> float:
         return self.div/self.price
     
-    def days_left(self):
+    def days_left(self) -> int:
         if self.ex_date:            
             today = datetime.datetime.today()            
             if self.ex_date > today:
