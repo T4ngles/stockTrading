@@ -92,6 +92,15 @@ fig = plt.figure()
 index_error = []
 
 def get_normalized_prices(stock_symbols):
+#create a pretty version of print for debugging purposes
+def pprint(*input_string: str):
+    final_string = ""
+    for foo in input_string:
+        final_string += foo
+    print(len(final_string)*"=")
+    print(final_string)
+    print(len(final_string)*"=")
+    
     ani = animation.FuncAnimation(fig,animate,interval=60000,cache_frame_data=False)
     plt.show()    
 
