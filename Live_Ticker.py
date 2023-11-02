@@ -196,11 +196,13 @@ def animate(i):
                     plt2.set_title(f"Normalized Prices for ASX Stocks(for today as of {current_time})")
                     plt2.legend(loc='upper left')
                     plt2.grid()
-                    
-    plt.axhline(y=1, color='black', linestyle='--', label='Purhcase')    
-    plt.axhline(y=1.01, color='red', linestyle='--', label='Target1')
-    plt.axhline(y=1.02, color='green', linestyle='--', label='Target2')
-    plt.yticks(numpy.arange(low_cutoff_ratio, high_cutoff_ratio, 0.01))
+
+    for plt in [plt1, plt2]:
+        plt.axhline(y=1, color='black', linestyle='--', label='Purhcase')    
+        plt.axhline(y=1.01, color='red', linestyle='--', label='Target1')
+        plt.axhline(y=1.02, color='green', linestyle='--', label='Target2')
+        plt.set_yticks(numpy.arange(low_cutoff_ratio, high_cutoff_ratio, 0.01))
+
     
         
 
