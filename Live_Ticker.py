@@ -1,16 +1,34 @@
-import yfinance as yf
+''''
+
+
+'''
+#Standard Libs
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import pandas as pd
 import numpy
 import datetime
 import time
+import os
 
-low_cutoff_ratio = 0.92
+#External Libs
+import yfinance as yf
+
+#Internal Libs
+import scrapers.int_Inv_Scraper
+
+low_cutoff_ratio = 0.95
 high_cutoff_ratio = 1.05
 
 class Stock_Trace:
-    _stock_dict = {}
+    _stockDict = {}
+
+    #getters and setters to allow access to class dictionary assignment
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+    def __setitem__(self, key, value):
+        setattr(self, key, value)
     
     def __init__(self, ticker: str, price: float, in_money: bool = False, ex_date: str = None, div: float = None):
         self.ticker = ticker
@@ -20,7 +38,21 @@ class Stock_Trace:
         self.ex_date = ex_date
         if self.ex_date:
             self.ex_date = datetime.datetime.strptime(self.ex_date, '%d/%m/%Y')
-        Stock_Trace._stock_dict[self.ticker] = self
+
+        if self.ticker in Stock_Trace._stockDict.keys():
+            if input(f"Do you want to overwrite stored StockTrace for {self.ticker} with a calculated price:{Stock_Trace._stockDict[self.ticker].price} with the manual price:{price} y/n") == "y" or "Y":
+                Stock_Trace._stockDict[ticker]["price"] = price
+            else:
+                pass
+        else:
+            print(f"{ticker} added to stock traces at target price of {price}")
+            Stock_Trace._stockDict[self.ticker] = self
+
+    #create instance from a dictionary. Intent from scraping sources
+    @classmethod
+    def _fromDict(cls, extStockDict):
+        for k,v in extStockDict.items():
+            cls(v["ticker"], v["price"], v["in_money"], v["ex_date"], v["div"])
         
     def div_return(self) -> float:
         return self.div/self.price
@@ -35,52 +67,30 @@ class Stock_Trace:
         else:
             return None            
         
-Stock_Trace('TPG.AX', 5.1, False)
-Stock_Trace('CBA.AX', 95.0, False)
-Stock_Trace('YAL.AX', 4.88, False)
-Stock_Trace('STO.AX', 7.2, False)
-Stock_Trace('QBE.AX', 15.2, False)
-Stock_Trace('AFI.AX', 7.15, False)
-Stock_Trace('EZL.AX', 1.02, False)
-Stock_Trace('KOV.AX', 8.0, False)
-Stock_Trace('GNE.AX', 2.1, False)
-Stock_Trace('ALX.AX', 5.85, False)
-Stock_Trace('VSL.AX', 7.5, False)
-Stock_Trace('MFF.AX', 2.98, False)
-Stock_Trace('HVN.AX', 3.6, False)
-Stock_Trace('FGX.AX', 1.07, False)
-Stock_Trace('UOS.AX', 0.52, False)
-Stock_Trace('HZN.AX', 0.15, False)
-Stock_Trace('WAM.AX', 1.50, False)
-Stock_Trace('NCM.AX', 23.5, False)
-Stock_Trace('KSC.AX', 2.0, False)
-Stock_Trace('STW.AX', 66.0, False)
-Stock_Trace('SLF.AX', 66.0, False)
-Stock_Trace('SFY.AX', 65.0, False)
-Stock_Trace('NHC.AX', 6.18, False, "23/10/2023", 0.3)
-
-Stock_Trace('BOQ.AX', 5.45, False, "26/10/2023", 0.21)
-Stock_Trace('ACF.AX', 0.80, False, "26/10/2023", 0.027)
-Stock_Trace('ASG.AX', 2, False, "31/10/2023", 0.1)
-Stock_Trace('CVL.AX', 0.88, False, "29/11/2023", 0.03)
-Stock_Trace('PMV.AX', 19.7, False, "09/01/2024", 0.6)
+Stock_Trace._fromDict(scrapers.int_Inv_Scraper.generateStockData())
 
 #always trading
-Stock_Trace('NEC.AX', 1.76, True, "03/03/2024", 0.05)
+Stock_Trace('NEC.AX', 1.8, True, "03/03/2024", 0.05)
+Stock_Trace('NHC.AX', 4.0, True, "23/10/2023", 0.3)
+Stock_Trace('HZN.AX', 0.15, True)
+Stock_Trace('FMG.AX', 19.5, True)
+Stock_Trace('ORG.AX', 7.01, True)
 
 #in money
 Stock_Trace('AGL.AX', 15.31, True)
-Stock_Trace('FMG.AX', 23.32, True)
 Stock_Trace('ASH.AX', 0.68, True)
-Stock_Trace('TLS.AX', 4.12, True)
-Stock_Trace('TCL.AX', 12.8, True)
-Stock_Trace('WLE.AX', 1.47, True, "17/10/2023", 0.045)
-Stock_Trace('ANZ.AX', 27.06, True)
+Stock_Trace('TLS.AX', 4.15, True)
+Stock_Trace('TCL.AX', 13.0, True)
+Stock_Trace('WLE.AX', 1.48, True, "17/10/2023", 0.045)
 Stock_Trace('WBC.AX', 23.05, True)
+
+Stock_Trace('ANZ.AX', 24.68, True)
+
+
 
 #todo: incorporate ex div dates into dictionary so stocks come up on ticker within +-1month of current date
 
-stock_symbols = [key for key in Stock_Trace._stock_dict.keys()]
+stock_symbols = [key for key in Stock_Trace._stockDict.keys()]
 
 # Trading hours in 24-hour format (10 am to 4 pm)
 now = datetime.datetime.now()
@@ -92,7 +102,7 @@ fig, (plt1, plt2) = plt.subplots(2, 1, figsize=(12, 12), sharex=False)
 index_error = []
 
 #period choice is 1d, 1w, 1mo, 1yr
-short_period = "2d"
+short_period = "1d"
 long_period = "7d"
 
 #create a pretty version of print for debugging purposes
@@ -112,20 +122,20 @@ def get_normalized_prices(stock_symbols: list):
 def animate(i):
     pprint("Starting at: ", str(datetime.datetime.now()))
     
-    # Fetch historical data for the required period and interval
-    historical_data_short_long = yf.download(stock_symbols, period=short_period, interval="1m")["Close"]
+    # Fetch historical data for the required period and interval as a Pandas DataFrame made of Series
+    historical_data_long = yf.download(stock_symbols, period=short_period, interval="1m")["Close"]
     historical_data_short = yf.download(stock_symbols, period=long_period, interval="1m")["Close"]
     
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
 
     # Normalize prices to the given normalization prices
-    normalization_prices = [ Stock_Trace._stock_dict[x].price for x in list(historical_data_short)] #account for order that yf downloads data
+    normalization_prices = [ Stock_Trace._stockDict[x].price for x in list(historical_data_short)] #account for order that yf downloads data
 
     normalized_data_short = historical_data_short / normalization_prices
 
-    normalization_prices_5d = [ Stock_Trace._stock_dict[x].price for x in list(historical_data_short_long)] #account for order that yf downloads data
+    normalization_prices_5d = [ Stock_Trace._stockDict[x].price for x in list(historical_data_long)] #account for order that yf downloads data
 
-    normalized_data_long = historical_data_short_long / normalization_prices_5d
+    normalized_data_long = historical_data_long / normalization_prices_5d
     
     #clearing sub plots for animation
     plt1.cla()
@@ -134,7 +144,7 @@ def animate(i):
     # Plot the normalized prices
     for stock_symbol in stock_symbols:
 
-        if Stock_Trace._stock_dict[stock_symbol].days_left() == None and not Stock_Trace._stock_dict[stock_symbol].in_money:
+        if Stock_Trace._stockDict[stock_symbol].days_left() == None and not Stock_Trace._stockDict[stock_symbol].in_money:
 
             print(f"{stock_symbol} no div or not in money")
             
@@ -154,24 +164,27 @@ def animate(i):
                 pprint(f"No data for {stock_symbol}")
 
             else:
-                normalised_price_short = historical_data_short[stock_symbol][-i]/Stock_Trace._stock_dict[stock_symbol].price
-                normalised_price_long = historical_data_short_long[stock_symbol][-i]/Stock_Trace._stock_dict[stock_symbol].price
-                buy_price = Stock_Trace._stock_dict[stock_symbol].price
+                normalised_price_short = historical_data_short[stock_symbol][-i]/Stock_Trace._stockDict[stock_symbol].price
+                buy_price = Stock_Trace._stockDict[stock_symbol].price
                 current_price = historical_data_short[stock_symbol][-i]
-                days_left = Stock_Trace._stock_dict[stock_symbol].days_left()
+                days_left = Stock_Trace._stockDict[stock_symbol].days_left()
+                if Stock_Trace._stockDict[stock_symbol].ex_date:
+                    ex_date = datetime.datetime.strftime(Stock_Trace._stockDict[stock_symbol].ex_date, '%d/%m/%Y') + f"({days_left} days)"
+                else:
+                    ex_date = None
 
                 print(stock_symbol,":",round(current_price,2)," purchase:", buy_price," norm:",round(normalised_price_short,2))
                 
-                if Stock_Trace._stock_dict[stock_symbol].div:
-                    div_yield = Stock_Trace._stock_dict[stock_symbol].div/current_price*100
+                if Stock_Trace._stockDict[stock_symbol].div:
+                    div_yield = Stock_Trace._stockDict[stock_symbol].div/current_price*100
                 else:
                     div_yield = 0
                 
                 if normalised_price_short > low_cutoff_ratio and normalised_price_short < high_cutoff_ratio:
 
-                    chart_label = f"{stock_symbol[0:3]} \${buy_price:.2f}({current_price:.2f}) div: {div_yield:.2f}% ex:{days_left}"
+                    chart_label = f"{stock_symbol[0:3]} \${buy_price:.2f}({current_price:.2f}) div: {div_yield:.2f}% ex:{ex_date}"
                     
-                    if Stock_Trace._stock_dict[stock_symbol].in_money:                        
+                    if Stock_Trace._stockDict[stock_symbol].in_money:                        
                         markerSymbol = 'x'
                     else:
                         markerSymbol = 'o'
