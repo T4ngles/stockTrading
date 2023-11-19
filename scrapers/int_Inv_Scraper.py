@@ -75,7 +75,10 @@ def generateStockData():
 				dividendGain = round(dividend/stockPrice,4)
 
 				#target price
-				targetPrice = min(dividend/targetPricePercent, yf.download(tickerSymbol, period='2y', interval="1d")["Close"].quantile(quantileTarget))
+				targetDivPrice = round(dividend/targetPricePercent,2)
+				targetQuartilePrice = round(yf.download(tickerSymbol, period='2y', interval="1d")["Close"].quantile(quantileTarget),2)
+
+				targetPrice = min(targetDivPrice, targetQuartilePrice)
 
 			except IndexError:
 				print(tickerSymbol," has no price data")
@@ -94,9 +97,11 @@ def generateStockData():
 		payDate = datetime.strptime(soup.find_all('td')[i*11+7].get_text(),'%d %b %Y')
 		payDate = datetime.strftime(payDate, '%d/%m/%Y')
 
+		if dividendGain > 0.01:
+			print(i, " ", tickerSymbol, marketCap, dividend, exDate, str(dividendGain*100)+"%","||", targetDivPrice,"||",targetQuartilePrice)
+		else:
+			print(i, " ", tickerSymbol, marketCap, dividend, exDate, str(dividendGain*100)+"%")
 		
-		print(i, " ", tickerSymbol, marketCap, dividend, exDate, str(dividendGain*100)+"%")
-
 		if dividendGain > divYieldMin:
 
 			_extStockDict[tickerSymbol] = {}
@@ -109,8 +114,10 @@ def generateStockData():
 			
 			#print(i," ", _extStockDict[tickerSymbol])
 	
+	print(10*"#","Summary",10*"#")
+
 	for stock in _extStockDict.items():
-		print(stock[1]["ticker"], "|", stock[1]["price"], stock[1]["divGain"])
+		print(stock[1]["ticker"], "|", stock[1]["price"], "|", stock[1]["div"], stock[1]["divGain"])
 	
 	return _extStockDict
 

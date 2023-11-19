@@ -1,8 +1,7 @@
-''''
+'''
 
 
 '''
-#Standard Libs
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import pandas as pd
@@ -18,7 +17,7 @@ import yfinance as yf
 import scrapers.int_Inv_Scraper
 
 low_cutoff_ratio = 0.95
-high_cutoff_ratio = 1.05
+high_cutoff_ratio = 1.1
 
 class Stock_Trace:
     _stockDict = {}
@@ -41,7 +40,9 @@ class Stock_Trace:
 
         if self.ticker in Stock_Trace._stockDict.keys():
             if input(f"Do you want to overwrite stored StockTrace for {self.ticker} with a calculated price:{Stock_Trace._stockDict[self.ticker].price} with the manual price:{price} y/n") == "y" or "Y":
+                print(f"overwritten with {price}")
                 Stock_Trace._stockDict[ticker]["price"] = price
+                Stock_Trace._stockDict[ticker]["in_money"] = in_money
             else:
                 pass
         else:
@@ -69,21 +70,22 @@ class Stock_Trace:
         
 Stock_Trace._fromDict(scrapers.int_Inv_Scraper.generateStockData())
 
+#Manual
+Stock_Trace('ELD.AX', 7.0, False)
+
 #always trading
-Stock_Trace('NEC.AX', 1.8, True, "03/03/2024", 0.05)
-Stock_Trace('NHC.AX', 4.0, True, "23/10/2023", 0.3)
-Stock_Trace('HZN.AX', 0.15, True)
-Stock_Trace('FMG.AX', 19.5, True)
-Stock_Trace('ORG.AX', 7.01, True)
+Stock_Trace('NEC.AX', 1.85, False)
+Stock_Trace('NHC.AX', 4.5, False, "23/10/2023", 0.3)
+Stock_Trace('HZN.AX', 0.15, False)
+Stock_Trace('FMG.AX', 19.5, False)
 
 #in money
 Stock_Trace('AGL.AX', 15.31, True)
 Stock_Trace('ASH.AX', 0.68, True)
 Stock_Trace('TLS.AX', 4.15, True)
-Stock_Trace('TCL.AX', 13.0, True)
+Stock_Trace('TCL.AX', 12.6, True)
 Stock_Trace('WLE.AX', 1.48, True, "17/10/2023", 0.045)
 Stock_Trace('WBC.AX', 23.05, True)
-
 Stock_Trace('ANZ.AX', 24.68, True)
 
 
@@ -212,8 +214,9 @@ def animate(i):
 
     for plt in [plt1, plt2]:
         plt.axhline(y=1, color='black', linestyle='--', label='Purhcase')    
-        plt.axhline(y=1.01, color='red', linestyle='--', label='Target1')
-        plt.axhline(y=1.02, color='green', linestyle='--', label='Target2')
+        plt.axhline(y=1.01, color='red', linestyle='--', label='Target1')        
+        plt.axhline(y=1.02, color='blue', linestyle='--', label='Target2')
+        plt.axhline(y=1.03, color='green', linestyle='--', label='Target3')
         plt.set_yticks(numpy.arange(low_cutoff_ratio, high_cutoff_ratio, 0.01))
 
     
