@@ -39,7 +39,7 @@ class Stock_Trace:
             self.ex_date = datetime.datetime.strptime(self.ex_date, '%d/%m/%Y')
 
         if self.ticker in Stock_Trace._stockDict.keys():
-            if input(f"Do you want to overwrite stored StockTrace for {self.ticker} with a calculated price:{Stock_Trace._stockDict[self.ticker].price} with the manual price:{price} y/n") == "y" or "Y":
+            if input(f"Do you want to overwrite stored StockTrace for {self.ticker} with a calculated price:{Stock_Trace._stockDict[self.ticker].price} with the manual price:{price} y/n") == "y":
                 print(f"overwritten with {price}")
                 Stock_Trace._stockDict[ticker]["price"] = price
                 Stock_Trace._stockDict[ticker]["in_money"] = in_money
