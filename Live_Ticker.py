@@ -71,13 +71,14 @@ class Stock_Trace:
 Stock_Trace._fromDict(scrapers.int_Inv_Scraper.generateStockData())
 
 #Manual
-Stock_Trace('ELD.AX', 7.0, False)
 
 #always trading
-Stock_Trace('NEC.AX', 1.85, False)
-Stock_Trace('NHC.AX', 4.5, False, "23/10/2023", 0.3)
-Stock_Trace('HZN.AX', 0.15, False)
-Stock_Trace('FMG.AX', 19.5, False)
+Stock_Trace('NEC.AX', 1.85, True)
+Stock_Trace('NHC.AX', 4.5, True)
+Stock_Trace('HZN.AX', 0.15, True)
+Stock_Trace('FMG.AX', 19.5, True)
+
+Stock_Trace('ORG.AX', 8.05, True)
 
 #in money
 Stock_Trace('AGL.AX', 15.31, True)
@@ -202,7 +203,7 @@ def animate(i):
 
                     plt1.set_xlabel("Time")
                     plt1.set_ylabel("Normalized Price")
-                    plt1.set_title(f"Normalized Prices for ASX Stocks(for last 5 days)")
+                    plt1.set_title(f"Normalized Prices for ASX Stocks(for today)")
                     plt1.legend(loc='upper left')
                     plt1.grid()
 

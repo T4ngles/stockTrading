@@ -31,7 +31,7 @@ marketCapLimit = 300
 divYieldMin = 0.02
 
 #div gain price 
-targetPricePercent = 0.03
+targetPricePercent = 0.05
 
 #quantile for target price calc
 quantileTarget = 0.4
@@ -59,6 +59,8 @@ def generateStockData():
 
 		#Market Cap
 		marketCap = soup.find_all('td')[i*11+2].get_text()[1:].replace(",","")
+		if marketCap == "":
+			marketCap = 0
 
 		#Dividend
 		dividend = soup.find_all('td')[i*11+4].get_text().strip()
@@ -77,7 +79,7 @@ def generateStockData():
 				#target price
 				targetDivPrice = round(dividend/targetPricePercent,2)
 				targetQuartilePrice = round(yf.download(tickerSymbol, period='2y', interval="1d")["Close"].quantile(quantileTarget),2)
-
+				print(f"DivP:{targetDivPrice} QuartP:{targetQuartilePrice}")
 				targetPrice = min(targetDivPrice, targetQuartilePrice)
 
 			except IndexError:
